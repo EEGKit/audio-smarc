@@ -3,7 +3,7 @@
 #######################################################
 
 # put your favorite compilation options here
-CFLAGS := -march=i686 -msse -msse2 -ffast-math -mfpmath=sse -Wall 
+CFLAGS := -msse -msse2 -ffast-math -mfpmath=sse -Wall -fPIC
 
 # switch comment to build DEBUG version 
 CFLAGS	:= $(CFLAGS) -DNDEBUG -O3 -g0

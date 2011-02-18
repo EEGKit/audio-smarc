@@ -66,8 +66,9 @@ double sse_filtering_aligned(const double* restrict filt, const double* restrict
 }
 
 double sse_filtering_misaligned(const double* restrict filt, const double* restrict signal, const int K) {
+//	printf("sse_filtering_misaligned filt=%p signal=%p K=%i\n",filt,signal,K);
 	__m128d v = _mm_setzero_pd();
-	__m128d s =	_mm_load1_pd(signal);
+	__m128d s = _mm_load1_pd(signal);
 	int k=0;
 	for (;k<K-4;k+=4) {
 		__m128d f = _mm_load_pd(filt + k);
@@ -91,13 +92,13 @@ double filter(const double* restrict filt, const double* restrict signal, int K)
 	if (K<8)
 		return basic_filter(filt,signal,K);
 	double v = 0;
-	if ((int)filt%16 != 0) {
+	if ((((unsigned long)filt) & 15) != 0) { // if filt is not 16-bytes aligned
 		v += filt[0]*signal[0];
 		++filt;
 		++signal;
 		--K;
 	}
-	if ((int)signal%16 == 0) {
+	if ((((unsigned long)signal) & 15) == 0) { // if signal is 16-bytes aligned
 		return v + sse_filtering_aligned(filt,signal,K);
 	}
 	// else
