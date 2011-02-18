@@ -213,7 +213,6 @@ struct PState* init_pstate(struct PFilter* pfilt)
 //		printf("buffer %i has buffer size %i + %i = %i \n",i,current_buffer_size,filter_len,cbuf->size);
 		total_size += cbuf->size;
 	}
-	printf("total buffer size = %i\n",total_size);
 
 	// allocate all buffer contiguously
 	pstate->buffer[0]->data = (double*) malloc(total_size*sizeof(double));
