@@ -1,0 +1,26 @@
+
+CFLAGS := -std=c99 -march=i686 -msse -msse2 -ffast-math -mfpmath=sse -Wall
+#CFLAGS	:= $(CFLAGS) -DDEBUG  -O2 -g2
+CFLAGS	:= $(CFLAGS) -DNDEBUG -O3 -g0
+
+LDFLAGS := libsndfile-1.dll
+
+SRC = main.c remez_lp.c smarc.c stage_impl.c workspace.c filtering.c polyfilt.c multi_stage.c
+
+TARGET = smarc
+OBJECTS = $(patsubst %.c,%.o,$(SRC))
+
+ARGTABLE_LIB_A := argtable2.dll
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	gcc.exe -Xlinker --enable-auto-import $(LDFLAGS) $(OBJECTS) $(ARGTABLE_LIB_A) -o $(TARGET)
+	
+%.o: %.c
+	echo "compiling $<"
+	gcc.exe $(CFLAGS) -c $<
+	
+clean:
+	rm -f $(OBJECTS)
+

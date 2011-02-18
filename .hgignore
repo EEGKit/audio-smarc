@@ -1,0 +1,6 @@
+syntax: glob
+smarc
+*.o
+*~
+libsmarc*
+doc/html
