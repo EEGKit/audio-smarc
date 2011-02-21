@@ -6,30 +6,37 @@
 Smarc audio rate converter
 ==========================
 
-.. toctree::
-   :maxdepth: 2
-
-*Smarc* is a **fast** and **high quality** audio rate converter. It allows conversion between any audio samplerate.
+*Smarc* is a **fast** and **high quality** audio rate converter. It allows conversion between any samplerate.
 *Smarc* is a command-line program and a C library to be integrated in other applications.
-
-Features
---------
-
-* signal rate conversion between any sample rates.
-* optimized for conversion between standard audio sample rates: 8, 16, 44.1, 48, 96, 192 kHz
-* command-line tool to convert audio files
-* C library to integrate *smarc* converter into other applications.
-* Can convert audio, but also any signal like EEG, seismic signals, etc.
-* Convert sample rate using polyphase decimation and interpolation filters. This method guarantees high-quality for upsampling and downsampling.
-* Internal filters can be tuned to emphasize speed or quality.
 
 Download
 --------
 
 .. highlights::
-	Download current release: `smarc-0.22.tgz <https://sourceforge.net/projects/audio-smarc/files/smarc-0.22.tgz/download>`_
+    Download current release: `smarc-0.3.tgz <https://sourceforge.net/projects/audio-smarc/files/smarc-0.3.tgz/download>`_
 
 *Smarc* source code is release under the terms of the **GNU LGPLv3 License**. *Smarc* source code is known to compile on Linux, MacOsX, Windows/mingw platforms.
+
+Features
+--------
+
+* signal rate conversion between any sample rates.
+* optimized for conversion between standard audio sample rates.
+* command-line tool to convert audio files
+* C library to integrate *smarc* converter into other applications.
+* Initially designed to convert audio, but also any 1-D signals such as EEG, seismic signals, etc.
+* Convert sample rate using polyphase decimation and interpolation filters. This method guarantees high-quality for upsampling and downsampling.
+* Internal filters can be tuned to emphasize speed or quality.
+
+
+Documentation
+-------------
+
+.. toctree::
+   :maxdepth: 2
+   
+   manualsmarc
+   integratesmarc
 
 
 Credits
