@@ -39,7 +39,7 @@
 
 #define BANDWIDTH "0.95"
 #define RP "0.1"
-#define RS "100"
+#define RS "140"
 #define TOL "0.000001"
 
 struct arg_lit *h, *version, *verbose, *fast, *check;
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
 		printf("	-b, --bandwidth=0..1 define the bandpass filter bandwidth, in relation\n");
         printf("		with maximum possible bandwidth (default=0.95)\n");
 		printf("	--rp=0.1 ripple factor of pass band filter, in dB\n");
-		printf("	--rs=100 ripple factor of stop band filter, in dB\n");
+		printf("	--rs=140 ripple factor of stop band filter, in dB\n");
 		printf("	--tol=0.000001 converter samplerate tolerance (default=0.000001)\n");
 		printf("	--ratios=L1/M1 L2/M2 ... multistage ratios definitions.\n");
 		printf("		If not given, smarc will try to find appropriate ratios\n");
@@ -167,12 +167,6 @@ int main(int argc, char** argv) {
 		}
 		int fsin = info.samplerate;
 		int fsout = r->ival[0];
-
-		if (rs->count==0 && ((info.format & SF_FORMAT_SUBMASK) == SF_FORMAT_PCM_24 ||
-							 (info.format & SF_FORMAT_SUBMASK) == SF_FORMAT_PCM_32 ||
-							 (info.format & SF_FORMAT_SUBMASK) == SF_FORMAT_FLOAT ||
-							 (info.format & SF_FORMAT_SUBMASK) == SF_FORMAT_FLOAT))
-			rs->sval[0] = "140";
 
 		// init filter
 		double bandwidth = atof(b->sval[0]);
