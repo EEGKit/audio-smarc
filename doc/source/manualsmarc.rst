@@ -70,7 +70,7 @@ the low-pass filter quality. Smarc builds this low-pass filter on demand (using 
 ``--rp=0.1``
     The ripple factor of pass band, in dB. Default is 0.1, lower value (like ``--rp=0.05`` or ``--rp=0.01``) gives a more accurate output and requires more computations.
     
-``--rs=100``
+``--rs=140``
     The filter's attenuation in the stop band, in dB. Default is 140, higher value (like ``--rs=150``) gives a more accurate output and requires more computations,
     lower value (``--rs=100``) gives a less accurate output and requires less computations.
 
@@ -108,7 +108,7 @@ To see which decomposition stages are used, use the ``--verbose`` option::
 Some options can alterate the stage decomposition:
 
 ``--fast``
-    This option make Smarc searching for the ''best'' stage decomposition according to given quality parameters. It may require some time,
+    This option make Smarc searching for the ''best'' stage decomposition according to given quality parameters. It may take time,
     and it is not always guaranteed to succeed, but if it does, the found decomposition is usually faster to compute than the default one,
     with the same output quality.
     
@@ -121,7 +121,7 @@ Some options can alterate the stage decomposition:
     If a non-exact conversion is acceptable, this may be a solution in complex situations.
     
 ``--ratios="L1/M1 L2/M2 ..."``
-    This options let the caller define explicitly the stages for the decomposition.
+    This options let the caller define explicitly the decomposition stages.
 
 
     

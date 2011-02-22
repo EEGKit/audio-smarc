@@ -13,7 +13,7 @@ Download
 --------
 
 .. highlights::
-    Download current release: `smarc-0.3.tgz <https://sourceforge.net/projects/audio-smarc/files/smarc-0.3.tgz/download>`_
+    Download current release: `smarc 0.3 <https://sourceforge.net/projects/audio-smarc/files/>`_
 
 *Smarc* source code is release under the terms of the **GNU LGPLv3 License**. *Smarc* source code is known to compile on Linux, MacOsX, Windows/mingw platforms.
 
