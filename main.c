@@ -194,13 +194,13 @@ int main(int argc, char** argv) {
 		}
 		double tolerance = atof(tol->sval[0]);
 		const char* userratios = ratios->sval[0];
-		struct PFilter* pfilt = init_pfilter(fsin, fsout, bandwidth, rpvalue,
+		struct PFilter* pfilt = smarc_init_pfilter(fsin, fsout, bandwidth, rpvalue,
 				rsvalue, tolerance, userratios, fast->count);
 		if (pfilt == NULL)
 			goto exit;
 
 		if (verbose->count)
-			print_pfilter(pfilt);
+			smarc_print_pfilter(pfilt);
 
 		if (check->count)
 			check_filter(pfilt, fsin, fsout, bandwidth);
@@ -279,7 +279,7 @@ int main(int argc, char** argv) {
 		sf_close(fhout);
 
 		// release filter
-		destroy_pfilter(pfilt);
+		smarc_destroy_pfilter(pfilt);
 
 	}
 
@@ -293,9 +293,9 @@ int main(int argc, char** argv) {
  */
 void resample_mono(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout) {
 	// init state and buffer per channels
-	struct PState* pstate = init_pstate(pfilt);
+	struct PState* pstate = smarc_init_pstate(pfilt);
 	const int IN_BUF_SIZE = BUF_SIZE;
-	const int OUT_BUF_SIZE = (int) get_output_buffer_size(pfilt,IN_BUF_SIZE);
+	const int OUT_BUF_SIZE = (int) smarc_get_output_buffer_size(pfilt,IN_BUF_SIZE);
 	double* inbuf = malloc(IN_BUF_SIZE * sizeof(double));
 	double* outbuf = malloc(OUT_BUF_SIZE * sizeof(double));
 
@@ -309,14 +309,14 @@ void resample_mono(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout) {
 			// reached end of file, have to flush last values
 			break;
 		}
-		written = polyphase_resample(pfilt, pstate, inbuf, read, outbuf,
+		written = smarc_resample(pfilt, pstate, inbuf, read, outbuf,
 				OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 	}
 
 	// flushing last values
 	while (1) {
-		written = polyphase_resample_flush(pfilt, pstate, outbuf,
+		written = smarc_resample_flush(pfilt, pstate, outbuf,
 				OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 		if (written<OUT_BUF_SIZE)
@@ -324,7 +324,7 @@ void resample_mono(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout) {
 	}
 
 	// release memomry
-	destroy_pstate(pstate);
+	smarc_destroy_pstate(pstate);
 	free(inbuf);
 	free(outbuf);
 }
@@ -336,9 +336,9 @@ void resample_mono(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout) {
 void resample_downmix(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 		int nbChannels) {
 	// init state and buffer per channels
-	struct PState* pstate = init_pstate(pfilt);
+	struct PState* pstate = smarc_init_pstate(pfilt);
 	const int IN_BUF_SIZE = BUF_SIZE;
-	const int OUT_BUF_SIZE = (int) get_output_buffer_size(pfilt,IN_BUF_SIZE);
+	const int OUT_BUF_SIZE = (int) smarc_get_output_buffer_size(pfilt,IN_BUF_SIZE);
 	double* inbuf = malloc(IN_BUF_SIZE * sizeof(double));
 	double* outbuf = malloc(OUT_BUF_SIZE * sizeof(double));
 	double* readBuf = malloc(IN_BUF_SIZE * nbChannels * sizeof(double));
@@ -362,14 +362,14 @@ void resample_downmix(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 			inbuf[i] = d / nbChannels;
 		}
 
-		written = polyphase_resample(pfilt, pstate, inbuf, read, outbuf,
+		written = smarc_resample(pfilt, pstate, inbuf, read, outbuf,
 				OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 	}
 
 	// flushing last values
 	while (1) {
-		written = polyphase_resample_flush(pfilt, pstate,
+		written = smarc_resample_flush(pfilt, pstate,
 				outbuf,	OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 		if (written<OUT_BUF_SIZE)
@@ -377,7 +377,7 @@ void resample_downmix(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 	}
 
 	// release memomry
-	destroy_pstate(pstate);
+	smarc_destroy_pstate(pstate);
 	free(inbuf);
 	free(outbuf);
 	free(readBuf);
@@ -389,9 +389,9 @@ void resample_downmix(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 void resample_channel(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 		int nbChannels, int channel) {
 	// init state and buffer per channels
-	struct PState* pstate = init_pstate(pfilt);
+	struct PState* pstate = smarc_init_pstate(pfilt);
 	const int IN_BUF_SIZE = BUF_SIZE;
-	const int OUT_BUF_SIZE = (int) get_output_buffer_size(pfilt,IN_BUF_SIZE);
+	const int OUT_BUF_SIZE = (int) smarc_get_output_buffer_size(pfilt,IN_BUF_SIZE);
 	double* inbuf = malloc(IN_BUF_SIZE * sizeof(double));
 	double* outbuf = malloc(OUT_BUF_SIZE * sizeof(double));
 	double* readBuf = malloc(IN_BUF_SIZE * nbChannels * sizeof(double));
@@ -411,14 +411,14 @@ void resample_channel(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 		for (int i = 0; i < read; i++)
 			inbuf[i] = readBuf[i * nbChannels + channel];
 
-		written = polyphase_resample(pfilt, pstate, inbuf, read,
+		written = smarc_resample(pfilt, pstate, inbuf, read,
 				outbuf,	OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 	}
 
 	// flushing last values
 	while (1) {
-		written = polyphase_resample_flush(pfilt, pstate,
+		written = smarc_resample_flush(pfilt, pstate,
 				outbuf,	OUT_BUF_SIZE);
 		sf_writef_double(fout, outbuf, written);
 		if (written<OUT_BUF_SIZE)
@@ -426,7 +426,7 @@ void resample_channel(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 	}
 
 	// release memomry
-	destroy_pstate(pstate);
+	smarc_destroy_pstate(pstate);
 	free(inbuf);
 	free(outbuf);
 	free(readBuf);
@@ -441,9 +441,9 @@ void resample_separately(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 	// init state and buffer per channels
 	struct PState* pstate[nbChannels];
 	for (int c = 0; c < nbChannels; c++)
-		pstate[c] = init_pstate(pfilt);
+		pstate[c] = smarc_init_pstate(pfilt);
 	const int IN_BUF_SIZE = BUF_SIZE;
-	const int OUT_BUF_SIZE = (int) get_output_buffer_size(pfilt,IN_BUF_SIZE);
+	const int OUT_BUF_SIZE = (int) smarc_get_output_buffer_size(pfilt,IN_BUF_SIZE);
 	double* inbuf = malloc(IN_BUF_SIZE * sizeof(double));
 	double* outbuf = malloc(OUT_BUF_SIZE * sizeof(double));
 	double* readBuf = malloc(IN_BUF_SIZE * nbChannels * sizeof(double));
@@ -465,7 +465,7 @@ void resample_separately(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 		for (int c = 0; c < nbChannels; c++) {
 			for (int i = 0; i < read; i++)
 				inbuf[i] = readBuf[i * nbChannels + c];
-			written = polyphase_resample(pfilt, pstate[c], inbuf, read,
+			written = smarc_resample(pfilt, pstate[c], inbuf, read,
 					outbuf, OUT_BUF_SIZE);
 			for (int i = 0; i < written; i++)
 				writeBuf[i * nbChannels + c] = outbuf[i];
@@ -477,7 +477,7 @@ void resample_separately(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 	// flushing last values
 	while (1) {
 		for (int c = 0; c < nbChannels; c++) {
-			written = polyphase_resample_flush(pfilt, pstate[c],
+			written = smarc_resample_flush(pfilt, pstate[c],
 					outbuf, OUT_BUF_SIZE);
 			for (int i = 0; i < written; i++)
 				writeBuf[i * nbChannels + c] = outbuf[i];
@@ -489,7 +489,7 @@ void resample_separately(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
 
 	// release memory
 	for (int c = 0; c < nbChannels; c++)
-		destroy_pstate(pstate[c]);
+		smarc_destroy_pstate(pstate[c]);
 	free(inbuf);
 	free(outbuf);
 	free(readBuf);
@@ -501,9 +501,9 @@ void resample_separately(struct PFilter* pfilt, SNDFILE* fin, SNDFILE* fout,
  */
 void check_filter(struct PFilter* pfilt,int fsin, int fsout, double bandwidth) {
 	// initialize state and buffers
-	struct PState* pstate = init_pstate(pfilt);
+	struct PState* pstate = smarc_init_pstate(pfilt);
 	const int IN_BUF_SIZE = BUF_SIZE;
-	const int OUT_BUF_SIZE = get_output_buffer_size(pfilt,IN_BUF_SIZE);
+	const int OUT_BUF_SIZE = smarc_get_output_buffer_size(pfilt,IN_BUF_SIZE);
 	double* inbuf = (double*) malloc(IN_BUF_SIZE*sizeof(double));
 	double* outbuf = (double*) malloc(OUT_BUF_SIZE*sizeof(double));
 
@@ -558,7 +558,7 @@ void check_filter(struct PFilter* pfilt,int fsin, int fsout, double bandwidth) {
 			++i;
 		}
 
-		int w = polyphase_resample(pfilt,pstate,inbuf,r,outbuf,OUT_BUF_SIZE);
+		int w = smarc_resample(pfilt,pstate,inbuf,r,outbuf,OUT_BUF_SIZE);
 
 		sf_writef_double(chirp_in,inbuf,r);
 		sf_writef_double(chirp_converted,outbuf,w);
@@ -582,7 +582,7 @@ void check_filter(struct PFilter* pfilt,int fsin, int fsout, double bandwidth) {
 
 	// flush last samples
 	while (1) {
-		int w = polyphase_resample_flush(pfilt,pstate,outbuf,OUT_BUF_SIZE);
+		int w = smarc_resample_flush(pfilt,pstate,outbuf,OUT_BUF_SIZE);
 		if (w==0) break;
 		sf_writef_double(chirp_converted,outbuf,w);
 		for (int r=0;r<w;r++,o++) {
@@ -634,7 +634,7 @@ void check_filter(struct PFilter* pfilt,int fsin, int fsout, double bandwidth) {
 	printf("\n");
 
 	// release state and buffers
-	destroy_pstate(pstate);
+	smarc_destroy_pstate(pstate);
 	free(inbuf);
 	free(outbuf);
 }

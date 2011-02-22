@@ -45,17 +45,17 @@ struct PFilter
 	struct PSFilter** filter;
 };
 
-int get_fs_in(struct PFilter* pfilt)
+int smarc_get_fs_in(struct PFilter* pfilt)
 {
 	return pfilt->fsin;
 }
 
-int get_fs_out(struct PFilter* pfilt)
+int smarc_get_fs_out(struct PFilter* pfilt)
 {
 	return pfilt->fsout;
 }
 
-int get_output_buffer_size(struct PFilter* pfilt,int inSize)
+int smarc_get_output_buffer_size(struct PFilter* pfilt,int inSize)
 {
 	int outSize = 1 + (int) ceil((double)inSize * (double) pfilt->fsout / (double) pfilt->fsin);
 	double stage_fsout = pfilt->fsin;
@@ -68,7 +68,7 @@ int get_output_buffer_size(struct PFilter* pfilt,int inSize)
 }
 
 
-struct PFilter* init_pfilter(int fsin, const int fsout, double bandwidth, double rp, double rs, double tol, const char* userratios, int searchfastconversion)
+struct PFilter* smarc_init_pfilter(int fsin, const int fsout, double bandwidth, double rp, double rs, double tol, const char* userratios, int searchfastconversion)
 {
     if (fsout==fsin)
     {
@@ -143,7 +143,7 @@ struct PFilter* init_pfilter(int fsin, const int fsout, double bandwidth, double
 	return pfilt;
 }
 
-void destroy_pfilter(struct PFilter* pfilt)
+void smarc_destroy_pfilter(struct PFilter* pfilt)
 {
 	for (int i=0;i<pfilt->nb_stages;i++)
 		destroy_psfilter(pfilt->filter[i]);
@@ -151,7 +151,7 @@ void destroy_pfilter(struct PFilter* pfilt)
 	free(pfilt);
 }
 
-void print_pfilter(struct PFilter* pfilt)
+void smarc_print_pfilter(struct PFilter* pfilt)
 {
 	printf("multi-stage polyphase resample from %iHz to %iHz\n",pfilt->fsin,pfilt->fsout);
 	printf("  passband to %0.2fHz, passband ripple factor %0.2fdB\n",pfilt->fpass,pfilt->rp);
@@ -180,7 +180,7 @@ struct PState
 	int flush_stage;
 };
 
-struct PState* init_pstate(struct PFilter* pfilt)
+struct PState* smarc_init_pstate(struct PFilter* pfilt)
 {
 	struct PState* pstate = malloc(sizeof(struct PState));
 	pstate->nb_stages = pfilt->nb_stages;
@@ -220,11 +220,11 @@ struct PState* init_pstate(struct PFilter* pfilt)
 		pstate->buffer[i]->data = pstate->buffer[i-1]->data + pstate->buffer[i-1]->size;
 
 	// reset pstate before returning it
-	reset_pstate(pstate,pfilt);
+	smarc_reset_pstate(pstate,pfilt);
 	return pstate;
 }
 
-void destroy_pstate(struct PState* pstate)
+void smarc_destroy_pstate(struct PState* pstate)
 {
 	for (int i=0;i<pstate->nb_stages;i++)
 		destroy_psstate(pstate->state[i]);
@@ -237,7 +237,7 @@ void destroy_pstate(struct PState* pstate)
 	free(pstate);
 }
 
-void reset_pstate(struct PState* pstate, struct PFilter* pfilt)
+void smarc_reset_pstate(struct PState* pstate, struct PFilter* pfilt)
 {
 	for (int i=0;i<pstate->nb_stages;i++)
 		reset_psstate(pstate->state[i],pfilt->filter[i]);
@@ -257,7 +257,7 @@ void reset_pstate(struct PState* pstate, struct PFilter* pfilt)
 	pstate->flush_size = 0;
 }
 
-int polyphase_resample(struct PFilter* pfilt, struct PState* pstate,
+int smarc_resample(struct PFilter* pfilt, struct PState* pstate,
 		const double* signal,
 		int signalLength,
 		double* output,
@@ -328,7 +328,7 @@ int polyphase_resample(struct PFilter* pfilt, struct PState* pstate,
 	return nbWritten;
 }
 
-int polyphase_resample_flush(struct PFilter* pfilt, struct PState* pstate,
+int smarc_resample_flush(struct PFilter* pfilt, struct PState* pstate,
 		double* output,
 		int outputLength)
 {
@@ -373,7 +373,7 @@ int polyphase_resample_flush(struct PFilter* pfilt, struct PState* pstate,
 		}
 
 		// process filtering
-		nbWritten += polyphase_resample(pfilt,pstate,NULL,0,output + nbWritten, outputLength - nbWritten);
+		nbWritten += smarc_resample(pfilt,pstate,NULL,0,output + nbWritten, outputLength - nbWritten);
 
 		// check if all have been read
 		if ((inbuf->pos<filt->K) && (pstate->flush_pos==pstate->flush_size)) {

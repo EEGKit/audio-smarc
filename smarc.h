@@ -51,33 +51,35 @@ struct PFilter;
  * - searchfastconversion (IN) : if 1 try to search fastest conversion stages. This may fail.
  *                               if 0 use safe default conversion stages.
  */
-struct PFilter* init_pfilter(int fsin, const int fsout, double bandwidth, double rp, double rs, double tol, const char* userratios, int searchfastconversion);
+struct PFilter* smarc_init_pfilter(int fsin, const int fsout,
+		double bandwidth, double rp, double rs,
+		double tol, const char* userratios, int searchfastconversion);
 
 /**
  * release PFilter
  */
-void destroy_pfilter(struct PFilter*);
+void smarc_destroy_pfilter(struct PFilter*);
 
 /**
  * returns input frequency samplerate for PFilter
  */
-int get_fs_in(struct PFilter*);
+int smarc_get_fs_in(struct PFilter*);
 
 /**
  * return output frequency samplerate for PFilter
  */
-int get_fs_out(struct PFilter*);
+int smarc_get_fs_out(struct PFilter*);
 
 /**
  * return a recommended output buffer size to safely resample
  * input signal chunks of length inSize with filter pfilt
  */
-int get_output_buffer_size(struct PFilter* pfilt,int inSize);
+int smarc_get_output_buffer_size(struct PFilter* pfilt,int inSize);
 
 /**
  * print PFilter informations to standard output
  */
-void print_pfilter(struct PFilter*);
+void smarc_print_pfilter(struct PFilter*);
 
 /**
  * PState represent a filter state. A PFilter may be used to filter several channels, each channels having its own PState.
@@ -87,17 +89,17 @@ struct PState;
 /**
  * Create a PState for a given PFilter. Returned pointer must be freed by destroy_pstate()
  */
-struct PState* init_pstate(struct PFilter*);
+struct PState* smarc_init_pstate(struct PFilter*);
 
 /**
  * Free PState
  */
-void destroy_pstate(struct PState*);
+void smarc_destroy_pstate(struct PState*);
 
 /**
  * Reset PState so that it can be used to process another signal.
  */
-void reset_pstate(struct PState*, struct PFilter*);
+void smarc_reset_pstate(struct PState*, struct PFilter*);
 
 /**
  * Resample a chunk of signal.
@@ -105,25 +107,26 @@ void reset_pstate(struct PState*, struct PFilter*);
  *  - pstate [IN/OUT]: current state of resampler
  *  - signal [IN]: array holding signal to resample
  *  - signalLength [IN]: length of signal to resample
- *  - nbRead [OUT]: number of sample read. Warning: nbRead is usually less than signal length.
- *                  samples which have not been read must be given again as input in next call.
  *  - output [OUT]: buffer where to write resampled signal
  *  - outputLength [IN]: size of output buffer.
- *  - nbWritten [OUT]: number of sample effectively written
- *  - w [IN]: workspace to use for computations
+ * Returns the number of output samples written.
  */
-int polyphase_resample(struct PFilter* pfilter, struct PState* pstate,
+int smarc_resample(struct PFilter* pfilter, struct PState* pstate,
 		const double* signal,
 		int signalLength,
 		double* output,
 		int outputLength);
 
 /**
- * Resample a chunk of signal and force to read and flush all sample in state and input chunk.
- * Parameters are identifical to polyphase_resample function.
- * This function must be called only once with the last chunk to resample. (or with an empty chunk)
+ * Flush all sample in state considering there will be no more input signal.
+ * This function must be called only once.
+ *  - pfilter [IN]: PFilter used to resample
+ *  - pstate [IN/OUT]: current state of resampler
+ *  - output [OUT]: buffer where to write resampled signal
+ *  - outputLength [IN]: size of output buffer.
+ * Returns the number of output samples written.
  */
-int polyphase_resample_flush(struct PFilter*, struct PState*,
+int smarc_resample_flush(struct PFilter*, struct PState*,
 		double* output,
 		int outputLength);
 
