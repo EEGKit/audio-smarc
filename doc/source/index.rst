@@ -39,6 +39,8 @@ Documentation
    integratesmarc
 
 
+* `Details on smarc internals <http://sourceforge.net/projects/audio-smarc/files/smarc_internals.pdf/download>`_
+
 Credits
 -------
 
