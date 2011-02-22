@@ -7,4 +7,5 @@ doc/html
 .project
 .cproject
 doc/build
+.settings/
 
